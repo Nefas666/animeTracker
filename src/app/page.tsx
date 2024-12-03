@@ -1,6 +1,6 @@
-import AnimeList from "./components/AnimeList";
-import FavoritesList from "./components/FavoriteList";
-import Search from "./components/Search";
+import Search from './components/Search'
+import AnimeList from './components/AnimeList'
+import FavoritesList from './components/FavoriteList'
 
 export default function Home() {
   return (
@@ -18,3 +18,4 @@ export default function Home() {
     </main>
   )
 }
+

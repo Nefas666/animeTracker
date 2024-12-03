@@ -64,7 +64,8 @@ export default function AnimeList() {
               episodes: anime.episodes,
               seasons: `${anime.season} ${anime.year}`,
               image_url: anime.images.jpg.image_url,
-              status: 'plan_to_watch'
+              status: 'plan_to_watch',
+              currentEpisode: undefined // Added currentEpisode
             }))
             setAnimes(formattedAnimes)
             setTotalPages(Math.ceil(data.pagination.items.total / (searchParams?.limit || 21)))
@@ -113,7 +114,7 @@ export default function AnimeList() {
           </div>
         </>
       ) : (
-        <div className="text-center mt-8">Nessun risultato trovato per "{query}".</div>
+        <div className="text-center mt-8">Nessun risultato trovato per &quot;{query}&quot;.</div>
       )}
     </>
   )

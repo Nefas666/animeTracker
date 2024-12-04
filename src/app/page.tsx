@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import Search from './components/Search'
 import AnimeList from './components/AnimeList'
 import FavoritesList from './components/FavoriteList'
@@ -9,7 +10,9 @@ export default function Home() {
       <Search />
       <div className="mt-8">
         <h2 className="text-2xl font-bold mb-4">Risultati della ricerca</h2>
-        <AnimeList />
+        <Suspense fallback={<div>Caricamento...</div>}>
+      <AnimeList />
+    </Suspense>
       </div>
       <div className="mt-12">
         <h2 className="text-2xl font-bold mb-4">I tuoi preferiti</h2>

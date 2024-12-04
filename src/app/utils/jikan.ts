@@ -6,6 +6,7 @@ export interface SearchParams {
   limit?: number;
   order_by?: 'title' | 'start_date' | 'end_date' | 'episodes' | 'score' | 'rank' | 'popularity';
   sort?: 'desc' | 'asc';
+  genres_exclude?:string
 }
 
 export const searchAnime = async ({
@@ -13,14 +14,16 @@ export const searchAnime = async ({
   page = 1,
   limit = 25,
   order_by = 'title',
-  sort = 'asc'
+  sort = 'asc',
+  genres_exclude='12'
 }: SearchParams) => {
   const params = new URLSearchParams({
     q,
     page: page.toString(),
     limit: limit.toString(),
     order_by,
-    sort
+    sort,
+    genres_exclude
   });
 
   const response = await fetch(`${API_URL}/anime?${params}`);

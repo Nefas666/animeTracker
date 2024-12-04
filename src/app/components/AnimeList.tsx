@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import AnimeCard from './AnimeCard'
 import { searchAnime, SearchParams } from '../utils/jikan'
+import useAnimeStorage from '../hooks/useAnimeStorage';
 
 export interface Anime {
   mal_id: number
@@ -37,10 +38,11 @@ export default function AnimeList() {
   const [isLoading, setIsLoading] = useState(false)
   const searchParams = useSearchParams()
   const query = searchParams.get('q')
+  const { isAnimeFavorite } = useAnimeStorage();
 
   useEffect(() => {
-    setAnimes([])  // Clear previous results when query changes
-    setPage(1)     // Reset to first page when query changes
+    setAnimes([])  
+    setPage(1)
   }, [query])
 
   useEffect(() => {
@@ -51,7 +53,8 @@ export default function AnimeList() {
         page,
         limit: 21,
         order_by: 'title',
-        sort: 'asc'
+        sort: 'asc',
+        genres_exclude:'12'
       }
 
       searchAnime(searchParams)
@@ -65,10 +68,10 @@ export default function AnimeList() {
               seasons: `${anime.season} ${anime.year}`,
               image_url: anime.images.jpg.image_url,
               status: 'plan_to_watch',
-              currentEpisode: undefined // Added currentEpisode
+              currentEpisode: undefined
             }))
             setAnimes(formattedAnimes)
-            setTotalPages(Math.ceil(data.pagination.items.total / (searchParams?.limit || 21)))
+            setTotalPages(Math.ceil(data.pagination.items.total / (searchParams.limit || 21)))
           } else {
             console.error('Unexpected data structure:', data)
             setAnimes([])
@@ -90,9 +93,9 @@ export default function AnimeList() {
         <div className="text-center mt-8">Caricamento...</div>
       ) : animes.length > 0 ? (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {animes.map((anime, index) => (
-              <AnimeCard key={`${anime.mal_id}-${index}`} anime={anime} />
+              <AnimeCard key={`${anime.mal_id}-${index}`} anime={anime} isFavorite={isAnimeFavorite(anime.mal_id)} />
             ))}
           </div>
           <div className="mt-4 flex justify-center space-x-2">

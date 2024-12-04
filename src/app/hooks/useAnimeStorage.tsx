@@ -7,6 +7,8 @@ interface AnimeStorageHook {
   removeFavorite: (animeId: number, status: AnimeStatus) => void;
   updateFavoriteStatus: (animeId: number, oldStatus: AnimeStatus, newStatus: AnimeStatus) => void;
   isAnimeFavorite: (animeId: number) => boolean;
+  notification: { message: string; type: 'success' | 'error' } | null;
+  clearNotification: () => void;
 }
 
 export type AnimeStatus = 'plan_to_watch' | 'watching' | 'completed';
@@ -17,17 +19,14 @@ const useAnimeStorage = (): AnimeStorageHook => {
     watching: [],
     completed: [],
   });
+  const [notification, setNotification] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
-  const loadFavorites = useCallback(() => {
+  useEffect(() => {
     const storedFavorites = localStorage.getItem('animeFavorites');
     if (storedFavorites) {
       setFavorites(JSON.parse(storedFavorites));
     }
   }, []);
-
-  useEffect(() => {
-    loadFavorites();
-  }, [loadFavorites]);
 
   const saveFavorite = useCallback((anime: FormattedAnime, status: AnimeStatus) => {
     setFavorites(prevFavorites => {
@@ -41,6 +40,7 @@ const useAnimeStorage = (): AnimeStorageHook => {
       }
 
       localStorage.setItem('animeFavorites', JSON.stringify(updatedFavorites));
+      setNotification({ message: `${anime.title} aggiunto ai preferiti`, type: 'success' });
       return updatedFavorites;
     });
   }, []);
@@ -48,8 +48,12 @@ const useAnimeStorage = (): AnimeStorageHook => {
   const removeFavorite = useCallback((animeId: number, status: AnimeStatus) => {
     setFavorites(prevFavorites => {
       const updatedFavorites = { ...prevFavorites };
+      const removedAnime = updatedFavorites[status].find(a => a.mal_id === animeId);
       updatedFavorites[status] = updatedFavorites[status].filter(a => a.mal_id !== animeId);
       localStorage.setItem('animeFavorites', JSON.stringify(updatedFavorites));
+      if (removedAnime) {
+        setNotification({ message: `${removedAnime.title} rimosso dai preferiti`, type: 'success' });
+      }
       return updatedFavorites;
     });
   }, []);
@@ -62,6 +66,7 @@ const useAnimeStorage = (): AnimeStorageHook => {
         updatedFavorites[oldStatus] = updatedFavorites[oldStatus].filter(a => a.mal_id !== animeId);
         updatedFavorites[newStatus].push({ ...animeToMove, status: newStatus });
         localStorage.setItem('animeFavorites', JSON.stringify(updatedFavorites));
+        setNotification({ message: `${animeToMove.title} spostato in ${newStatus}`, type: 'success' });
       }
       return updatedFavorites;
     });
@@ -71,7 +76,11 @@ const useAnimeStorage = (): AnimeStorageHook => {
     return Object.values(favorites).some(list => list.some(anime => anime.mal_id === animeId));
   }, [favorites]);
 
-  return { favorites, saveFavorite, removeFavorite, updateFavoriteStatus, isAnimeFavorite };
+  const clearNotification = useCallback(() => {
+    setNotification(null);
+  }, []);
+
+  return { favorites, saveFavorite, removeFavorite, updateFavoriteStatus, isAnimeFavorite, notification, clearNotification };
 };
 
 export default useAnimeStorage;

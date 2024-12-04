@@ -4,7 +4,12 @@ import { useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import AnimeCard from './AnimeCard'
 import { searchAnime, SearchParams } from '../utils/jikan'
-import useAnimeStorage from '../hooks/useAnimeStorage';
+import useAnimeStorage from '../hooks/useAnimeStorage'
+import { Swiper, SwiperSlide } from 'swiper/react'
+import { Navigation, Pagination } from 'swiper/modules'
+import 'swiper/css'
+import 'swiper/css/navigation'
+import 'swiper/css/pagination'
 
 export interface Anime {
   mal_id: number
@@ -38,11 +43,11 @@ export default function AnimeList() {
   const [isLoading, setIsLoading] = useState(false)
   const searchParams = useSearchParams()
   const query = searchParams.get('q')
-  const { isAnimeFavorite } = useAnimeStorage();
+  const { isAnimeFavorite } = useAnimeStorage()
 
   useEffect(() => {
-    setAnimes([])  
-    setPage(1)
+    setAnimes([])  // Clear previous results when query changes
+    setPage(1)     // Reset to first page when query changes
   }, [query])
 
   useEffect(() => {
@@ -51,10 +56,10 @@ export default function AnimeList() {
       const searchParams: SearchParams = {
         q: query,
         page,
-        limit: 21,
-        order_by: 'title',
-        sort: 'asc',
-        genres_exclude:'12'
+        limit: 20,  // Increased to 20 for 5 slides of 4 cards each
+        order_by: 'popularity',
+        sort: 'desc',
+        genres_exclude: '12'  // Esclude gli anime hentai
       }
 
       searchAnime(searchParams)
@@ -70,12 +75,10 @@ export default function AnimeList() {
               status: 'plan_to_watch',
               currentEpisode: undefined
             }))
-            setAnimes(formattedAnimes)
-            setTotalPages(Math.ceil(data.pagination.items.total / (searchParams.limit || 21)))
+            setAnimes(prevAnimes => [...prevAnimes, ...formattedAnimes])
+            setTotalPages(Math.ceil(data.pagination.items.total / (searchParams.limit || 20)))
           } else {
             console.error('Unexpected data structure:', data)
-            setAnimes([])
-            setTotalPages(1)
           }
         })
         .catch(error => console.error('Error fetching anime:', error))
@@ -83,41 +86,52 @@ export default function AnimeList() {
     }
   }, [query, page])
 
+  const loadMore = () => {
+    if (page < totalPages) {
+      setPage(prevPage => prevPage + 1)
+    }
+  }
+
   if (!query) {
     return <div className="text-center mt-8">Inserisci un termine di ricerca per iniziare.</div>
   }
 
   return (
     <>
-      {isLoading ? (
+      {isLoading && page === 1 ? (
         <div className="text-center mt-8">Caricamento...</div>
       ) : animes.length > 0 ? (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <Swiper
+            modules={[Navigation, Pagination]}
+            spaceBetween={20}
+            slidesPerView={4}
+            navigation
+            pagination={{ clickable: true }}
+            className="mySwiper"
+          >
             {animes.map((anime, index) => (
-              <AnimeCard key={`${anime.mal_id}-${index}`} anime={anime} isFavorite={isAnimeFavorite(anime.mal_id)} />
+              <SwiperSlide key={`${anime.mal_id}-${index}`}>
+                <AnimeCard anime={anime} isFavorite={isAnimeFavorite(anime.mal_id)} />
+              </SwiperSlide>
             ))}
-          </div>
-          <div className="mt-4 flex justify-center space-x-2">
-            <button
-              onClick={() => setPage(prev => Math.max(prev - 1, 1))}
-              disabled={page === 1}
-              className="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-300"
-            >
-              Precedente
-            </button>
-            <span className="px-4 py-2">Pagina {page} di {totalPages}</span>
-            <button
-              onClick={() => setPage(prev => Math.min(prev + 1, totalPages))}
-              disabled={page === totalPages}
-              className="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-300"
-            >
-              Successiva
-            </button>
-          </div>
+          </Swiper>
+          {page < totalPages && (
+            <div className="text-center mt-4">
+              <button
+                onClick={loadMore}
+                className="card__button w-1/2 border-3 border-black bg-black text-white py-2 px-4 text-lg font-bold uppercase cursor-pointer relative active:scale-95"
+              >
+                Visualizza altro
+              </button>
+            </div>
+          )}
         </>
       ) : (
         <div className="text-center mt-8">Nessun risultato trovato per &quot;{query}&quot;.</div>
+      )}
+      {isLoading && page > 1 && (
+        <div className="text-center mt-4">Caricamento altri risultati...</div>
       )}
     </>
   )

@@ -35,7 +35,7 @@ body {
     transform: translateX(0);
   }
 
-  .card__button::before {
+  /* .card__button::before {
     content: 'Sure?';
     position: absolute;
     top: 0;
@@ -49,11 +49,11 @@ body {
     justify-content: center;
     transform: translateY(100%);
     transition: transform 0.3s;
-  }
-
+  } */
+/* 
   .card__button:hover::before {
     transform: translateY(0);
-  }
+  } */
 
   @keyframes glitch {
     0% {
@@ -78,3 +78,16 @@ body {
   }
 }
 
+/* Swiper styles */
+.swiper-button-next,
+.swiper-button-prev {
+  color: #000000 !important;
+}
+
+.swiper-pagination-bullet-active {
+  background-color: #000000 !important;
+}
+
+.swiper-slide {
+  height: auto !important;
+}

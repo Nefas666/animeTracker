@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { FormattedAnime } from '../components/AnimeList';
 
 interface AnimeStorageHook {
@@ -6,6 +6,7 @@ interface AnimeStorageHook {
   saveFavorite: (anime: FormattedAnime, status: AnimeStatus) => void;
   removeFavorite: (animeId: number, status: AnimeStatus) => void;
   updateFavoriteStatus: (animeId: number, oldStatus: AnimeStatus, newStatus: AnimeStatus) => void;
+  isAnimeFavorite: (animeId: number) => boolean;
 }
 
 export type AnimeStatus = 'plan_to_watch' | 'watching' | 'completed';
@@ -17,46 +18,60 @@ const useAnimeStorage = (): AnimeStorageHook => {
     completed: [],
   });
 
-  useEffect(() => {
+  const loadFavorites = useCallback(() => {
     const storedFavorites = localStorage.getItem('animeFavorites');
     if (storedFavorites) {
       setFavorites(JSON.parse(storedFavorites));
     }
   }, []);
 
-  const saveFavorite = (anime: FormattedAnime, status: AnimeStatus) => {
-    const updatedFavorites = { ...favorites };
-    const existingIndex = updatedFavorites[status].findIndex(a => a.mal_id === anime.mal_id);
+  useEffect(() => {
+    loadFavorites();
+  }, [loadFavorites]);
 
-    if (existingIndex !== -1) {
-      updatedFavorites[status][existingIndex] = { ...anime, status };
-    } else {
-      updatedFavorites[status].push({ ...anime, status });
-    }
+  const saveFavorite = useCallback((anime: FormattedAnime, status: AnimeStatus) => {
+    setFavorites(prevFavorites => {
+      const updatedFavorites = { ...prevFavorites };
+      const existingIndex = updatedFavorites[status].findIndex(a => a.mal_id === anime.mal_id);
 
-    setFavorites(updatedFavorites);
-    localStorage.setItem('animeFavorites', JSON.stringify(updatedFavorites));
-  };
+      if (existingIndex !== -1) {
+        updatedFavorites[status][existingIndex] = { ...anime, status };
+      } else {
+        updatedFavorites[status].push({ ...anime, status });
+      }
 
-  const removeFavorite = (animeId: number, status: AnimeStatus) => {
-    const updatedFavorites = { ...favorites };
-    updatedFavorites[status] = updatedFavorites[status].filter(a => a.mal_id !== animeId);
-    setFavorites(updatedFavorites);
-    localStorage.setItem('animeFavorites', JSON.stringify(updatedFavorites));
-  };
-
-  const updateFavoriteStatus = (animeId: number, oldStatus: AnimeStatus, newStatus: AnimeStatus) => {
-    const updatedFavorites = { ...favorites };
-    const animeToMove = updatedFavorites[oldStatus].find(a => a.mal_id === animeId);
-    if (animeToMove) {
-      updatedFavorites[oldStatus] = updatedFavorites[oldStatus].filter(a => a.mal_id !== animeId);
-      updatedFavorites[newStatus].push({ ...animeToMove, status: newStatus });
-      setFavorites(updatedFavorites);
       localStorage.setItem('animeFavorites', JSON.stringify(updatedFavorites));
-    }
-  };
+      return updatedFavorites;
+    });
+  }, []);
 
-  return { favorites, saveFavorite, removeFavorite, updateFavoriteStatus };
+  const removeFavorite = useCallback((animeId: number, status: AnimeStatus) => {
+    setFavorites(prevFavorites => {
+      const updatedFavorites = { ...prevFavorites };
+      updatedFavorites[status] = updatedFavorites[status].filter(a => a.mal_id !== animeId);
+      localStorage.setItem('animeFavorites', JSON.stringify(updatedFavorites));
+      return updatedFavorites;
+    });
+  }, []);
+
+  const updateFavoriteStatus = useCallback((animeId: number, oldStatus: AnimeStatus, newStatus: AnimeStatus) => {
+    setFavorites(prevFavorites => {
+      const updatedFavorites = { ...prevFavorites };
+      const animeToMove = updatedFavorites[oldStatus].find(a => a.mal_id === animeId);
+      if (animeToMove) {
+        updatedFavorites[oldStatus] = updatedFavorites[oldStatus].filter(a => a.mal_id !== animeId);
+        updatedFavorites[newStatus].push({ ...animeToMove, status: newStatus });
+        localStorage.setItem('animeFavorites', JSON.stringify(updatedFavorites));
+      }
+      return updatedFavorites;
+    });
+  }, []);
+
+  const isAnimeFavorite = useCallback((animeId: number): boolean => {
+    return Object.values(favorites).some(list => list.some(anime => anime.mal_id === animeId));
+  }, [favorites]);
+
+  return { favorites, saveFavorite, removeFavorite, updateFavoriteStatus, isAnimeFavorite };
 };
 
 export default useAnimeStorage;

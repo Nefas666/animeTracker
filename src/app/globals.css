@@ -8,6 +8,26 @@
   --background-end-rgb: 255, 255, 255;
 }
 
+.shizuru-regular {
+    font-family: "Shizuru", system-ui;
+    font-weight: 400;
+    font-style: normal;
+  }
+
+  * {
+    font-family: "Lexend", serif;
+    font-optical-sizing: auto;
+    font-weight:wght;
+    font-style: normal;
+  }
+
+  @supports (font-variation-settings: "wght" 450) {
+    * {
+      font-family: "Lexend";
+      font-weight: 450;
+    }
+  }
+
 body {
   color: rgb(var(--foreground-rgb));
   background: linear-gradient(
@@ -82,12 +102,212 @@ body {
 .swiper-button-next,
 .swiper-button-prev {
   color: #000000 !important;
+  border-radius: 0%;
+  visibility: hidden;
 }
 
-.swiper-pagination-bullet-active {
-  background-color: #000000 !important;
-}
+.swiper-pagination-bullet {
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    line-height: 20px;
+    font-size: 12px;
+    color: #000;
+    opacity: 1;
+    background: rgba(0, 0, 0, 0.2);
+  }
+  
+  .swiper-pagination-bullet-active {
+    color: #fff;
+    background: #007aff;
+  }
 
+/* 
 .swiper-slide {
   height: auto !important;
+} */
+
+.swiper-wrapper{
+    width:100vw!important;
+    height:100vh!important;
 }
+.swiper {
+    width: 100%;
+    height: 100%;
+  }
+  
+
+  
+  .swiper-slide img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+.input {
+    width: 100%;
+    
+    height: 60px;
+    padding: 12px;
+    font-size: 18px;
+    color: #000;
+    background-color: #fff;
+    border: 4px solid #000;
+    border-radius: 0;
+    outline: none;
+    transition: all 0.3s ease;
+    box-shadow: 8px 8px 0 #000;
+  }
+  
+  .input::placeholder {
+    color: #888;
+  }
+  
+  .input:hover {
+    transform: translate(-4px, -4px);
+    box-shadow: 12px 12px 0 #000;
+  }
+  
+  .input:focus {
+    background-color: #000;
+    color: #fff;
+    border-color: #ffffff;
+  }
+  
+  .input:focus::placeholder {
+    color: #fff;
+  }
+  
+  @keyframes typing {
+    from {
+      width: 0;
+    }
+    to {
+      width: 100%;
+    }
+  }
+  
+  @keyframes blink {
+    50% {
+      border-color: transparent;
+    }
+  }
+  
+  .input:focus::after {
+    content: "|";
+    position: absolute;
+    right: 10px;
+    animation: blink 0.7s step-end infinite;
+  }
+  
+  .input:valid {
+    animation: typing 2s steps(30, end);
+  }
+  .input-container {
+    position: relative;
+    width: 100%;
+    max-width: 270px;
+  }
+  
+  .input {
+    width: 100%;
+    height: 60px;
+    padding: 12px;
+    font-size: 18px;
+    color: #000;
+    background-color: #fff;
+    border: 4px solid #000;
+    border-radius: 0;
+    outline: none;
+    transition: all 0.3s ease;
+    box-shadow: 8px 8px 0 #000;
+  }
+  
+  .input::placeholder {
+    color: #888;
+  }
+  
+  .input:hover {
+    transform: translate(-4px, -4px);
+    box-shadow: 12px 12px 0 #000;
+  }
+  
+  .input:focus {
+    background-color: #010101;
+    color: #fff;
+    border-color: #d6d9dd;
+  }
+  
+  .input:focus::placeholder {
+    color: #fff;
+  }
+  
+  
+  @keyframes glitch {
+    0% {
+      transform: none;
+      opacity: 1;
+    }
+    7% {
+      transform: skew(-0.5deg, -0.9deg);
+      opacity: 0.75;
+    }
+    10% {
+      transform: none;
+      opacity: 1;
+    }
+    27% {
+      transform: none;
+      opacity: 1;
+    }
+    30% {
+      transform: skew(0.8deg, -0.1deg);
+      opacity: 0.75;
+    }
+    35% {
+      transform: none;
+      opacity: 1;
+    }
+    52% {
+      transform: none;
+      opacity: 1;
+    }
+    55% {
+      transform: skew(-1deg, 0.2deg);
+      opacity: 0.75;
+    }
+    50% {
+      transform: none;
+      opacity: 1;
+    }
+    72% {
+      transform: none;
+      opacity: 1;
+    }
+    75% {
+      transform: skew(0.4deg, 1deg);
+      opacity: 0.75;
+    }
+    80% {
+      transform: none;
+      opacity: 1;
+    }
+    100% {
+      transform: none;
+      opacity: 1;
+    }
+  }
+  
+
+  
+  .input:focus + .input-container::after {
+    color: #fff;
+  }
+  
+  .input:not(:placeholder-shown) {
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-shadow: 0px 0px 0 #000;
+  }
+  

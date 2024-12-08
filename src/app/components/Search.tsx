@@ -26,7 +26,7 @@ export default function Search() {
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Cerca un anime..."
-        className="w-full p-2 pr-10 border border-gray-300 rounded"
+        className="input"
       />
       {query && (
         <button
@@ -37,7 +37,7 @@ export default function Search() {
           ✕
         </button>
       )}
-      <button type="submit" className="absolute right-2 top-1/2 transform -translate-y-1/2 px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">
+      <button type="submit" className="absolute right-2 top-1/2 transform -translate-y-1/2 px-2 py-1 bg-black- text-white hover:bg-slate-600">
         🔍
       </button>
     </form>

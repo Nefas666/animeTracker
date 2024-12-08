@@ -48,7 +48,7 @@ export default function AnimeCard({ anime, isFavorite = false }: AnimeProps) {
   };
 
   return (
-    <div className="card group w-[300px] p-5 bg-white border-6 border-black shadow-[12px_12px_0_#000] transition-all duration-300 hover:translate-x-[-5px] hover:translate-y-[-5px] hover:shadow-[17px_17px_0_#000]">
+    <div className="card group p-5 bg-white border-6 border-black shadow-[12px_12px_0_#000] transition-all duration-300 hover:translate-x-[-5px] hover:translate-y-[-5px] hover:shadow-[17px_17px_0_#000]">
        <div className="mb-4">
         <label className="block text-sm font-medium text-gray-700 mb-1">Stato:</label>
         <Dropdown
@@ -85,8 +85,8 @@ export default function AnimeCard({ anime, isFavorite = false }: AnimeProps) {
       <div className="card__content text-base leading-relaxed text-black mb-5 h-0 overflow-hidden opacity-0 group-hover:h-auto group-hover:opacity-100 transition-all duration-300">
         {anime.synopsis}
       </div>
-      <div className="mb-4">
-        <p className="text-sm">Stagioni: {anime.seasons}</p>
+      <div>
+        {/* <p className="text-sm">Stagioni: {anime.seasons}</p> */}
         <p className="text-sm">Episodi: {anime.episodes}</p>
       </div>
      

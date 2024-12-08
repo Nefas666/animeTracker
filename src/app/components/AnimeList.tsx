@@ -6,7 +6,7 @@ import AnimeCard from './AnimeCard'
 import { searchAnime, SearchParams } from '../utils/jikan'
 import useAnimeStorage from '../hooks/useAnimeStorage'
 import { Swiper, SwiperSlide } from 'swiper/react'
-import { Navigation, Pagination } from 'swiper/modules'
+import { Pagination, Mousewheel } from 'swiper/modules'
 import 'swiper/css'
 import 'swiper/css/navigation'
 import 'swiper/css/pagination'
@@ -45,9 +45,16 @@ export default function AnimeList() {
   const query = searchParams.get('q')
   const { isAnimeFavorite } = useAnimeStorage()
 
+  const pagination = {
+    clickable: true,
+    renderBullet: function (index: number, className: string) {
+      return '<span class="' + className + '">' + (index + 1) + '</span>';
+    },
+  };
+
   useEffect(() => {
-    setAnimes([])  // Clear previous results when query changes
-    setPage(1)     // Reset to first page when query changes
+    setAnimes([])
+    setPage(1)
   }, [query])
 
   useEffect(() => {
@@ -56,7 +63,7 @@ export default function AnimeList() {
       const searchParams: SearchParams = {
         q: query,
         page,
-        limit: 20,  // Increased to 20 for 5 slides of 4 cards each
+        limit: 20,
         order_by: 'popularity',
         sort: 'desc',
         genres_exclude: '12'  // Esclude gli anime hentai
@@ -103,11 +110,12 @@ export default function AnimeList() {
       ) : animes.length > 0 ? (
         <>
           <Swiper
-            modules={[Navigation, Pagination]}
-            spaceBetween={20}
-            slidesPerView={4}
-            navigation
-            pagination={{ clickable: true }}
+            direction={'vertical'}
+            slidesPerView={1}
+            //spaceBetween={30}
+            mousewheel={true}
+            pagination={pagination}
+            modules={[Mousewheel, Pagination]}
             className="mySwiper"
           >
             {animes.map((anime, index) => (

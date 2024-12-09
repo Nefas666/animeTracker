@@ -12,7 +12,7 @@ export interface SearchParams {
 export const searchAnime = async ({
   q,
   page = 1,
-  limit = 25,
+  limit = 10,
   order_by = 'title',
   sort = 'asc',
   genres_exclude='12'

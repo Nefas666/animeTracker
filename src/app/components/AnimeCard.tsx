@@ -48,7 +48,7 @@ export default function AnimeCard({ anime, isFavorite = false }: AnimeProps) {
   };
 
   return (
-    <div className="card group p-5 bg-white border-6 border-black shadow-[12px_12px_0_#000] transition-all duration-300 hover:translate-x-[-5px] hover:translate-y-[-5px] hover:shadow-[17px_17px_0_#000]">
+    <div className="card group max-w-[80%] p-5 bg-white border-6 border-black shadow-[12px_12px_0_#000] transition-all duration-300 hover:translate-x-[-5px] hover:translate-y-[-5px] hover:shadow-[17px_17px_0_#000]">
        <div className="mb-4">
         <label className="block text-sm font-medium text-gray-700 mb-1">Stato:</label>
         <Dropdown

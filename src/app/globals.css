@@ -108,7 +108,7 @@ body {
 
 
 .swiper-pagination.swiper-pagination-bullets{
-    transform: translate3d(0, -100%, 0)!important;
+    transform: translate3d(0, -55%, 0)!important;
 }
 
 .swiper-pagination-bullet {

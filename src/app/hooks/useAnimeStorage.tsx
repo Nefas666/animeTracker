@@ -5,7 +5,7 @@ interface AnimeStorageHook {
   favorites: Record<AnimeStatus, FormattedAnime[]>;
   saveFavorite: (anime: FormattedAnime, status: AnimeStatus) => void;
   removeFavorite: (animeId: number, status: AnimeStatus) => void;
-  updateFavoriteStatus: (animeId: number, oldStatus: AnimeStatus, newStatus: AnimeStatus) => void;
+  updateFavoriteStatus: (animeId: number, oldStatus: AnimeStatus, newStatus: AnimeStatus, newEpisode?: number) => void;
   isAnimeFavorite: (animeId: number) => boolean;
   notification: { message: string; type: 'success' | 'error' } | null;
   clearNotification: () => void;
@@ -58,15 +58,19 @@ const useAnimeStorage = (): AnimeStorageHook => {
     });
   }, []);
 
-  const updateFavoriteStatus = useCallback((animeId: number, oldStatus: AnimeStatus, newStatus: AnimeStatus) => {
+  const updateFavoriteStatus = useCallback((animeId: number, oldStatus: AnimeStatus, newStatus: AnimeStatus, newEpisode?: number) => {
     setFavorites(prevFavorites => {
       const updatedFavorites = { ...prevFavorites };
       const animeToMove = updatedFavorites[oldStatus].find(a => a.mal_id === animeId);
       if (animeToMove) {
         updatedFavorites[oldStatus] = updatedFavorites[oldStatus].filter(a => a.mal_id !== animeId);
-        updatedFavorites[newStatus].push({ ...animeToMove, status: newStatus });
+        updatedFavorites[newStatus].push({
+          ...animeToMove,
+          status: newStatus,
+          currentEpisode: newEpisode !== undefined ? newEpisode : animeToMove.currentEpisode
+        });
         localStorage.setItem('animeFavorites', JSON.stringify(updatedFavorites));
-        setNotification({ message: `${animeToMove.title} spostato in ${newStatus}`, type: 'success' });
+        setNotification({ message: `${animeToMove.title} aggiornato`, type: 'success' });
       }
       return updatedFavorites;
     });

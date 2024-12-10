@@ -48,57 +48,56 @@ export default function AnimeCard({ anime, isFavorite = false }: AnimeProps) {
   };
 
   return (
-    <div className="card group max-w-[80%] p-5 bg-white border-6 border-black shadow-[12px_12px_0_#000] transition-all duration-300 hover:translate-x-[-5px] hover:translate-y-[-5px] hover:shadow-[17px_17px_0_#000]">
-       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-1">Stato:</label>
-        <Dropdown
-          options={statusOptions}
-          value={status}
-          onChange={(value) => handleStatusChange(value as AnimeStatus)}
-        />
-      </div>
-       {status === 'watching' && (
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">Episodio corrente:</label>
-          <input
-            type="number"
-            min={0}
-            max={anime.episodes}
-            value={currentEpisode}
-            onChange={handleEpisodeChange}
-            className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+    <div className="card group w-full max-w-[80%] h-64 bg-white border-6 border-black shadow-[12px_12px_0_#000] transition-all duration-300 hover:translate-x-[-5px] hover:translate-y-[-5px] hover:shadow-[17px_17px_0_#000] flex overflow-hidden">
+      <div className="flex-grow p-5 flex flex-col max-w-[60%]">
+        <div className="mb-2">
+          <Dropdown
+            options={statusOptions}
+            value={status}
+            onChange={(value) => handleStatusChange(value as AnimeStatus)}
           />
         </div>
-      )}
-      <div className="relative h-40 mb-4 overflow-hidden">
+        <h2 className="card__title text-2xl font-black text-black uppercase mb-2 block relative overflow-hidden">
+          {anime.title}
+        </h2>
+        <div className="card__content text-base leading-relaxed text-black mb-4 flex-grow overflow-y-auto">
+          {anime.synopsis}
+        </div>
+        <div className="flex justify-between items-center">
+          <div className="text-sm">
+            {/* <p>Stagioni: {anime.seasons}</p> */}
+            <p>Episodi: {anime.episodes}</p>
+          </div>
+          <button
+            onClick={handleToggleFavorite}
+            className="card__button w-1/3 border-3 border-black bg-black text-white py-2 px-4 text-lg font-bold uppercase cursor-pointer relative overflow-hidden transition-transform duration-300 active:scale-95"
+          >
+            {isFavoriteLocal ? 'Rimuovi' : 'Aggiungi'}
+          </button>
+        </div>
+        {status === 'watching' && (
+          <div className="mt-2">
+            <label className="block text-sm font-medium text-gray-700">Episodio corrente:</label>
+            <input
+              type="number"
+              min={0}
+              max={anime.episodes}
+              value={currentEpisode}
+              onChange={handleEpisodeChange}
+              className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            />
+          </div>
+        )}
+      </div>
+      <div className="w-full relative">
         <Image 
           src={anime.image_url} 
           alt={anime.title} 
           layout="fill" 
           objectFit="cover" 
-          className="transition-transform duration-300 hover:scale-110"
+          className="transition-transform duration-300 group-hover:scale-110"
         />
       </div>
-      <h2 className="card__title text-2xl font-black text-black uppercase mb-4 block relative overflow-hidden">
-        {anime.title}
-      </h2>
-      <div className="card__content text-base leading-relaxed text-black mb-5 h-0 overflow-hidden opacity-0 group-hover:h-auto group-hover:opacity-100 transition-all duration-300">
-        {anime.synopsis}
-      </div>
-      <div>
-        {/* <p className="text-sm">Stagioni: {anime.seasons}</p> */}
-        <p className="text-sm">Episodi: {anime.episodes}</p>
-      </div>
-     
-     
-      <button
-        onClick={handleToggleFavorite}
-        className={`card__button w-1/2 border-3 border-black bg-black text-white py-2 px-4 text-lg font-bold uppercase cursor-pointer relative active:scale-95
-             ${isFavoriteLocal ? 'bg-red-500' : 'bg-black'
-          }`}
-        >
-        {isFavoriteLocal ? 'Rimuovi' : 'Aggiungi'}
-      </button>
     </div>
   )
 }

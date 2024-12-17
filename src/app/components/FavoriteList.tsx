@@ -25,9 +25,10 @@ const FavoritesList: React.FC = () => {
     setEditingAnime(null)
   }
 
+
   const renderTable = (status: AnimeStatus) => (
     <div key={status} className="mb-8">
-      <h2 className="text-2xl font-bold mb-4 capitalize">{status.replace('_', ' ')}</h2>
+      <h2 className="text-2xl font-bold mb-4 capitalize">{status.replaceAll('_', ' ')}</h2>
       {favorites[status].length > 0 ? (
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">

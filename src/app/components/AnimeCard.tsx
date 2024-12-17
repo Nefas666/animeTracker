@@ -48,7 +48,7 @@ export default function AnimeCard({ anime, isFavorite = false }: AnimeProps) {
   };
 
   return (
-    <div className="card group w-full max-w-[80%] h-64 bg-white border-6 border-black shadow-[12px_12px_0_#000] transition-all duration-300 hover:translate-x-[-5px] hover:translate-y-[-5px] hover:shadow-[17px_17px_0_#000] flex overflow-hidden">
+    <div className="card group max-w-[80%] h-full bg-white border-6 border-black shadow-[8px_8px_0_#000] transition-all duration-300 hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[10px_10px_0_#000] flex overflow-hidden">
       <div className="flex-grow p-5 flex flex-col max-w-[60%]">
         <div className="mb-2">
           <Dropdown
@@ -70,9 +70,10 @@ export default function AnimeCard({ anime, isFavorite = false }: AnimeProps) {
           </div>
           <button
             onClick={handleToggleFavorite}
-            className="card__button w-1/3 border-3 border-black bg-black text-white py-2 px-4 text-lg font-bold uppercase cursor-pointer relative overflow-hidden transition-transform duration-300 active:scale-95"
-          >
-            {isFavoriteLocal ? 'Rimuovi' : 'Aggiungi'}
+            className={`card__button w-1/2 border-3 border-black bg-black text-white py-2 px-4 text-lg font-bold uppercase cursor-pointer relative active:scale-95
+              ${isFavoriteLocal ? 'bg-red-500' : 'bg-black'
+           }`}          >
+            {isFavoriteLocal ? 'Rimuovi dai preferiti' : 'Aggiungi ai preferiti'}
           </button>
         </div>
         {status === 'watching' && (
@@ -95,7 +96,7 @@ export default function AnimeCard({ anime, isFavorite = false }: AnimeProps) {
           alt={anime.title} 
           layout="fill" 
           objectFit="cover" 
-          className="transition-transform duration-300 group-hover:scale-110"
+          className="transition-transform duration-300 group-hover:scale-105"
         />
       </div>
     </div>

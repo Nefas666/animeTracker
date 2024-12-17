@@ -20,7 +20,7 @@ export default function Search() {
   }, [router])
 
   return (
-    <form onSubmit={handleSearch} className="mb-8 relative">
+    <form onSubmit={handleSearch} className="relative w-96">
       <input
         type="text"
         value={query}

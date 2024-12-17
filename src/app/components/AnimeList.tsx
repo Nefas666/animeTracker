@@ -7,6 +7,7 @@ import { searchAnime, SearchParams } from '../utils/jikan'
 import useAnimeStorage from '../hooks/useAnimeStorage'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Pagination, Mousewheel } from 'swiper/modules'
+import type { Swiper as SwiperType } from 'swiper'
 import 'swiper/css'
 import 'swiper/css/pagination'
 
@@ -41,6 +42,7 @@ export default function AnimeList() {
   const [totalPages, setTotalPages] = useState(1)
   const [isLoading, setIsLoading] = useState(false)
   const searchParams = useSearchParams()
+  const [isLastSlide, setIsLastSlide] = useState(false)
   const query = searchParams.get('q')
   const { isAnimeFavorite } = useAnimeStorage()
 
@@ -104,10 +106,14 @@ export default function AnimeList() {
   }, [page, fetchAnime])
 
   const loadMore = useCallback(() => {
-    if (page < totalPages) {
+    if (page < totalPages && isLastSlide) {
       setPage(prevPage => prevPage + 1)
     }
-  }, [page, totalPages])
+  }, [page, totalPages, isLastSlide])
+
+  const handleSlideChange = (swiper: SwiperType) => {
+    setIsLastSlide(swiper.isEnd)
+  }
 
   if (!query) {
     return <div className="text-center mt-8">Inserisci un termine di ricerca per iniziare.</div>
@@ -119,7 +125,7 @@ export default function AnimeList() {
         <div className="text-center mt-8">Caricamento...</div>
       ) : animes.length > 0 ? (
         <>
-          <div className="flex-grow overflow-hidden">
+          <div className="flex-grow overflow-hidden swiper-container">
             <Swiper
               direction={'vertical'}
               slidesPerView={1}
@@ -127,6 +133,8 @@ export default function AnimeList() {
               pagination={pagination}
               modules={[Mousewheel, Pagination]}
               className="h-full"
+              onSlideChange={handleSlideChange}
+
             >
               {animes.map((anime, index) => (
                 <SwiperSlide key={`${anime.mal_id}-${index}`}>
@@ -135,8 +143,8 @@ export default function AnimeList() {
               ))}
             </Swiper>
           </div>
-          {page < totalPages && (
-            <div className="text-center mt-4 mb-4">
+          {isLastSlide && page < totalPages && (
+            <div className="text-center mt-4 mb-4 sticky bottom-0 bg-white py-2">
               <button
                 onClick={loadMore}
                 className="card__button w-1/2 border-3 border-black bg-black text-white py-2 px-4 text-lg font-bold uppercase cursor-pointer relative active:scale-95"

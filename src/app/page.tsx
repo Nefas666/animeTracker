@@ -16,14 +16,13 @@ export default function Home() {
 
   return (
     <main className="container mx-auto px-4 py-10">
-      <div className="flex flex-col justify-center gap-y-2">
-
-      <h1 className="md:text-[8rem] text-3xl font-bold mb-2 text-center">Anime Tracker</h1>
-      <p className="shizuru-regular text-center text-6xl mb-2">アニメ</p>
-      </div>
-      <Search />
+      <header className="flex-none p-4 sticky top-0 bg-white z-10 shadow-md transition-all duration-300 ease-in-out" id="app-header">
+        <div className="flex items-center justify-between">
+          <h1 className="text-3xl font-bold">Anime Tracker</h1>
+          <Search />
+        </div>
+      </header>
       <div className="py-4">
-        <h2 className="text-2xl font-bold mb-4">Risultati della ricerca</h2>
         <Suspense fallback={<div>Caricamento...</div>}>
       <AnimeList />
     </Suspense>

@@ -15,7 +15,7 @@ export const searchAnime = async ({
   limit = 10,
   order_by = 'title',
   sort = 'asc',
-  genres_exclude='12'
+  genres_exclude='12',
 }: SearchParams) => {
   const params = new URLSearchParams({
     q,

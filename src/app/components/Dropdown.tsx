@@ -21,7 +21,7 @@ const Dropdown: React.FC<DropdownProps> = ({ options, value, onChange }) => {
       <div>
         <button
           type="button"
-          className="inline-flex w-full justify-between items-center gap-x-1.5 bg-[#B8FF9F] hover:bg-[#99fc77] px-3 py-2 border-black border-2 focus:outline-none focus:shadow-[2px_2px_0px_rgba(0,0,0,1)]"
+          className="inline-flex w-full justify-between items-center gap-x-1.5 px-3 py-2 border-black border-2 focus:outline-none focus:shadow-[2px_2px_0px_rgba(0,0,0,1)]"
           id="menu-button"
           aria-expanded={open}
           aria-haspopup="true"

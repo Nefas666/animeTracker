@@ -1,15 +1,10 @@
-'use client'
+"use client"
 
-import { useState, useEffect, useCallback } from 'react'
-import { useSearchParams } from 'next/navigation'
-import AnimeCard from './AnimeCard'
-import { searchAnime, SearchParams } from '../utils/jikan'
-import useAnimeStorage from '../hooks/useAnimeStorage'
-import { Swiper, SwiperSlide } from 'swiper/react'
-import { Pagination, Mousewheel } from 'swiper/modules'
-import type { Swiper as SwiperType } from 'swiper'
-import 'swiper/css'
-import 'swiper/css/pagination'
+import { useState, useEffect, useCallback } from "react"
+import { useSearchParams } from "next/navigation"
+import AnimeCard from "./AnimeCard"
+import { searchAnime, type SearchParams } from "../utils/jikan"
+import useAnimeStorage from "../hooks/useAnimeStorage"
 
 export interface Anime {
   mal_id: number
@@ -32,7 +27,7 @@ export interface FormattedAnime {
   episodes: number
   seasons: string
   image_url: string
-  status: 'completed' | 'plan_to_watch' | 'watching'
+  status: "completed" | "plan_to_watch" | "watching"
   currentEpisode?: number
 }
 
@@ -42,54 +37,49 @@ export default function AnimeList() {
   const [totalPages, setTotalPages] = useState(1)
   const [isLoading, setIsLoading] = useState(false)
   const searchParams = useSearchParams()
-  const [isLastSlide, setIsLastSlide] = useState(false)
-  const query = searchParams.get('q')
+  const query = searchParams.get("q")
   const { isAnimeFavorite } = useAnimeStorage()
 
-  const pagination = {
-    clickable: true,
-    renderBullet: function (index: number, className: string) {
-      return '<span class="' + className + '">' + (index + 1) + '</span>';
-    },
-  };
+  const fetchAnime = useCallback(
+    async (currentPage: number) => {
+      if (!query) return
 
-  const fetchAnime = useCallback(async (currentPage: number) => {
-    if (!query) return;
-
-    setIsLoading(true)
-    const searchParams: SearchParams = {
-      q: query,
-      page: currentPage,
-      limit: 20,
-      order_by: 'popularity',
-      sort: 'desc',
-      genres_exclude: '12'  // Esclude gli anime hentai
-    }
-
-    try {
-      const data = await searchAnime(searchParams)
-      if (Array.isArray(data.data)) {
-        const formattedAnimes: FormattedAnime[] = data.data.map((anime: Anime) => ({
-          mal_id: anime.mal_id,
-          title: anime.title,
-          synopsis: anime.synopsis,
-          episodes: anime.episodes,
-          seasons: `${anime.season} ${anime.year}`,
-          image_url: anime.images.jpg.image_url,
-          status: 'plan_to_watch',
-          currentEpisode: undefined
-        }))
-        setAnimes(prevAnimes => [...prevAnimes, ...formattedAnimes])
-        setTotalPages(Math.ceil(data.pagination.items.total / searchParams.limit!))
-      } else {
-        console.error('Unexpected data structure:', data)
+      setIsLoading(true)
+      const searchParams: SearchParams = {
+        q: query,
+        page: currentPage,
+        limit: 8, // Mostra 8 risultati per pagina
+        order_by: "popularity",
+        sort: "desc",
+        genres_exclude: "12", // Esclude gli anime hentai
       }
-    } catch (error) {
-      console.error('Error fetching anime:', error)
-    } finally {
-      setIsLoading(false)
-    }
-  }, [query])
+
+      try {
+        const data = await searchAnime(searchParams)
+        if (Array.isArray(data.data)) {
+          const formattedAnimes: FormattedAnime[] = data.data.map((anime: Anime) => ({
+            mal_id: anime.mal_id,
+            title: anime.title,
+            synopsis: anime.synopsis,
+            episodes: anime.episodes,
+            seasons: `${anime.season} ${anime.year}`,
+            image_url: anime.images.jpg.image_url,
+            status: "plan_to_watch",
+            currentEpisode: undefined,
+          }))
+          setAnimes((prevAnimes) => [...prevAnimes, ...formattedAnimes])
+          setTotalPages(Math.ceil(data.pagination.items.total / searchParams.limit!))
+        } else {
+          console.error("Unexpected data structure:", data)
+        }
+      } catch (error) {
+        console.error("Error fetching anime:", error)
+      } finally {
+        setIsLoading(false)
+      }
+    },
+    [query],
+  )
 
   useEffect(() => {
     setAnimes([])
@@ -99,58 +89,41 @@ export default function AnimeList() {
     }
   }, [query, fetchAnime])
 
+  const loadMore = useCallback(() => {
+    if (page < totalPages && !isLoading) {
+      setPage((prevPage) => prevPage + 1)
+    }
+  }, [page, totalPages, isLoading])
+
   useEffect(() => {
     if (page > 1) {
       fetchAnime(page)
     }
   }, [page, fetchAnime])
 
-  const loadMore = useCallback(() => {
-    if (page < totalPages && isLastSlide) {
-      setPage(prevPage => prevPage + 1)
-    }
-  }, [page, totalPages, isLastSlide])
-
-  const handleSlideChange = (swiper: SwiperType) => {
-    setIsLastSlide(swiper.isEnd)
-  }
-
   if (!query) {
     return <div className="text-center mt-8">Inserisci un termine di ricerca per iniziare.</div>
   }
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="container mx-auto px-4">
       {isLoading && page === 1 ? (
         <div className="text-center mt-8">Caricamento...</div>
       ) : animes.length > 0 ? (
         <>
-          <div className="flex-grow overflow-hidden swiper-container">
-            <Swiper
-              direction={'vertical'}
-              slidesPerView={1}
-              mousewheel={true}
-              pagination={pagination}
-              modules={[Mousewheel, Pagination]}
-              className="h-full"
-              onSlideChange={handleSlideChange}
-
-            >
-              {animes.map((anime, index) => (
-                <SwiperSlide key={`${anime.mal_id}-${index}`}>
-                  <AnimeCard anime={anime} isFavorite={isAnimeFavorite(anime.mal_id)} />
-                </SwiperSlide>
-              ))}
-            </Swiper>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {animes.map((anime) => (
+              <AnimeCard key={anime.mal_id} anime={anime} isFavorite={isAnimeFavorite(anime.mal_id)} />
+            ))}
           </div>
-          {isLastSlide && page < totalPages && (
-            <div className="text-center mt-4 mb-4 sticky bottom-0 bg-white py-2">
+          {page < totalPages && (
+            <div className="text-center mt-8 mb-8">
               <button
                 onClick={loadMore}
-                className="card__button w-1/2 border-3 border-black bg-black text-white py-2 px-4 text-lg font-bold uppercase cursor-pointer relative active:scale-95"
+                className="cta"
                 disabled={isLoading}
               >
-                {isLoading ? 'Caricamento...' : 'Visualizza altro'}
+                {isLoading ? "Caricamento..." : "Visualizza altro"}
               </button>
             </div>
           )}
